@@ -62,7 +62,7 @@ namespace WebScraping
 
                 if (!isHaveKeyword)
                 {
-                    textBoxResult.Text = "見つまりません";
+                    textBoxResult.Text = "見つかりません";
                 }
             }
             catch (Exception ex)

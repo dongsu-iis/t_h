@@ -26,14 +26,17 @@ namespace WebScraping
                 var keyword = textBoxKeyword.Text;
 
                 // URLリスト
-                var urls = new List<string> { url };
+                var urls = new List<string> { url};
 
                 // 検索ワード存在フラグ
                 bool isHaveKeyword = false;
 
-                // URLリストを辿り、ワードを検索する
                 var scr = new Scraping(url);
-                while (urls.Count() > 0)
+
+                // URLリストを辿り、ワードを検索する
+                //   終了条件：リンクの数がなくなる
+                //            リンクの数が上限（1000）を越える
+                do
                 {
                     var urlPath = urls[0];
                     urls.RemoveAt(0);
@@ -51,23 +54,16 @@ namespace WebScraping
 
                     // URLリスト追加
                     scr.SetUrlList(html, urls);
+                    scr.OrganizeUrl(urls);
 
-                    //リンクの数が多すぎる場合、処理中止。
-                    //TODO 上限個数を指定できるようにする
-                    if (urls.Count() > 100)
-                    {
-                        break;
-                    }
-                }
+                } while (urls.Count() > 0 && urls.Count() < 1000);
 
-                if (!isHaveKeyword)
-                {
-                    textBoxResult.Text = "見つかりません";
-                }
+                MessageBox.Show("検索完了しました。", "Info");
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "エラー");
+                MessageBox.Show(ex.ToString(), "Error");
             }
         }
     }

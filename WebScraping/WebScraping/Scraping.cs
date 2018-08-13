@@ -67,6 +67,7 @@ namespace WebScraping
         /// <returns></returns>
         public void SetUrlList(IHtmlDocument html, List<string> urls)
         {
+
             foreach (var item in html.QuerySelectorAll("a"))
             {
                 // リンクのみ対象
@@ -75,17 +76,31 @@ namespace WebScraping
                 {
                     // 外部リンクの場合：そのまま形式でURLを配列に追加
                     // 内部リンクの場合：ベースURLと連結した形式で配列に追加
-                    if (IsUrl(item.Attributes["href"].Value))
+                    switch (IsUrl(item.Attributes["href"].Value))
                     {
-                        //urls.Add(item.Attributes["href"].Value);
-                    }
-                    else
-                    {
-                        urls.Add(BaseUrl + item.Attributes["href"].Value);
+                        case true:
+                            // TODO:外部リンク辿るとキリがないので、廃止。必要あれば修正して復活する
+                            //urls.Add(item.Attributes["href"].Value);
+                            break;
+
+                        case false:
+                            urls.Add(BaseUrl + item.Attributes["href"].Value);
+                            break;
                     }
                 }
             }
         }
+
+
+        /// <summary>
+        /// URLのリストをソートと重複除去を行う
+        /// </summary>
+        /// <param name="urls"></param>
+        public void OrganizeUrl(List<string> urls)
+        {
+            urls.Select(x => x).Distinct().OrderBy(x =>x);
+        }
+
 
         /// <summary>
         /// 正規表現を用いて、対象文字列がURL形式かどうかを判定する
@@ -94,7 +109,7 @@ namespace WebScraping
         /// <returns></returns>
         private bool IsUrl(string input)
         {
-            return Regex.IsMatch(input,@"^s?https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+$");
+            return Regex.IsMatch(input, @"^s?https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+$");
         }
     }
 }
